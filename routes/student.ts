@@ -12,10 +12,10 @@ const router = Router();
 // Student login
 
 router.post(
-  '/login',
+  "/login",
   [
-    body('email').isEmail().withMessage('Email must be valid'),
-    body('password').notEmpty().withMessage('Password is required'),
+    body("email").isEmail().withMessage("Email must be valid"),
+    body("password").notEmpty().withMessage("Password is required"),
   ],
   async (req: any, res: any) => {
     const errors = validationResult(req);
@@ -25,32 +25,40 @@ router.post(
 
     const { email, password } = req.body;
 
-    const student = await Student.findOne({email:email})
+    const student = await Student.findOne({ email: email });
     if (!student) {
-      return res.status(404).json({ message: 'Student not found' });
+      return res.status(404).json({ message: "Student not found" });
     }
 
     const isPasswordCorrect = bcrypt.compareSync(password, student.password);
     if (!isPasswordCorrect) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ studentId: student.id }, 'SECRET_KEY', { expiresIn: '1h' });
-    res.json({ message: 'Login successful', token });
+    const token = jwt.sign({ studentId: student._id }, "SECRET_KEY", {
+      expiresIn: "1h",
+    });
+    res.json({ message: "Login successful", token });
   }
 );
-
 
 // Get assigned tasks
 router.get("/tasks", authenticateStudent, async (req: any, res: any) => {
   const student = req.student;
   let tasklist = [];
-  for (const task in student.tasks) {
-    let taskDetails = await Task.findById(task);
-    tasklist.push(taskDetails);
-  }
+  if (student.tasks.length > 0) {
+    console.log(student.tasks);
 
-  res.json({ tasks: tasklist });
+    for (const task in student.tasks) {
+      const taskDetails = await Task.findById(student.tasks[task]);
+
+      tasklist.push(taskDetails);
+    }
+
+    res.json({ tasks: tasklist });
+  } else {
+    res.json({ message: "No task found" });
+  }
 });
 
 // Update task status
