@@ -5,8 +5,7 @@ import adminRoutes from "./routes/admin";
 import studentRoutes from "./routes/student";
 import mongoose from "mongoose";
 
-const MONGO_URL =
-  "mongodb+srv://nikhilbabup:42MhvcOiuFzledxo@cluster0.mcjga.mongodb.net/studemnt-mgmnt";
+const MONGO_URL = "Add mongo url here";
 // Load environment variables
 dotenv.config();
 
