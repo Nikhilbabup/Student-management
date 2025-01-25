@@ -42,9 +42,15 @@ router.post(
 
 
 // Get assigned tasks
-router.get('/tasks', authenticateStudent, (req:any, res:any) => {
+router.get("/tasks", authenticateStudent, async (req: any, res: any) => {
   const student = req.student;
-  res.json({ tasks: student.tasks });
+  let tasklist = [];
+  for (const task in student.tasks) {
+    let taskDetails = await Task.findById(task);
+    tasklist.push(taskDetails);
+  }
+
+  res.json({ tasks: tasklist });
 });
 
 // Update task status
